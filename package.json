@@ -2,10 +2,11 @@
   "name": "apify-insolvenz-scraper",
   "version": "1.0.0",
   "type": "module",
-  "dependencies": {
-    "puppeteer-extra": "^3.3.4",
-    "puppeteer-extra-plugin-stealth": "^2.11.1",
-    "crawlee": "^3.5.0"
+   "dependencies": {
+    "crawlee": "^3.13.4",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "puppeteer-core": "^21.3.8"
   },
   "scripts": {
     "start": "node main.js"
