@@ -1,5 +1,7 @@
-FROM apify/actor-node-puppeteer-chrome:20
+FROM apify/actor-node-puppeteer-chrome
 
 COPY . ./
 
-RUN npm install --quiet --only=prod --no-optional && (npm list || true)
+RUN npm install --omit=dev --no-optional
+
+CMD xvfb-run -a -s "-ac -screen 0 1920x1080x24+32 -nolisten tcp" npm start --silent
