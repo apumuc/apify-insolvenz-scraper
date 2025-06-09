@@ -1,35 +1,23 @@
-// main.js
-import { PuppeteerCrawler, Dataset, ProxyConfiguration } from 'crawlee';
-import puppeteer, { executablePath } from 'puppeteer-extra';
+import { PuppeteerCrawler, Dataset } from 'crawlee';
+import puppeteerExtra from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
+const puppeteer = puppeteerExtra;
 puppeteer.use(StealthPlugin());
 
 const startUrls = [
     'https://www.insolvenzbekanntmachungen.de/cgi-bin/bl_suche.pl?Gericht=Hamburg&Suchart=einfach&Dateiart=er&Seite=1'
 ];
 
-const proxyConfiguration = await ProxyConfiguration.create({
-    groups: ['AUTO'] // oder 'RESIDENTIAL', falls verfügbar
-});
-
 const crawler = new PuppeteerCrawler({
     launchContext: {
         launcher: puppeteer,
         launchOptions: {
             headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            executablePath: executablePath(),
         },
     },
-    proxyConfiguration,
     requestHandler: async ({ request, page, log }) => {
         log.info(`📄 Crawling ${request.url}`);
-
-        await page.waitForSelector('tr');
-        await page.mouse.move(200, 200);
-        await page.mouse.wheel({ deltaY: 300 });
-        await page.waitForTimeout(1000);
 
         const rows = await page.$$eval('tr', trs =>
             trs.map(tr => {
