@@ -13,6 +13,7 @@ const crawler = new PuppeteerCrawler({
         launcher: puppeteer,
         launchOptions: {
             headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
         },
     },
     requestHandler: async ({ request, page, log }) => {
