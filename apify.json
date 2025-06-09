@@ -1,0 +1,7 @@
+{
+  "version": "1.0",
+  "name": "apify-insolvenz-scraper",
+  "main": "main.js",
+  "env": {},
+  "buildTag": "latest"
+}
