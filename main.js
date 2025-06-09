@@ -1,5 +1,6 @@
-import { PuppeteerCrawler, Dataset } from 'crawlee';
-import puppeteer from 'puppeteer-extra';
+// main.js
+import { PuppeteerCrawler, Dataset, ProxyConfiguration } from 'crawlee';
+import puppeteer, { executablePath } from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
 puppeteer.use(StealthPlugin());
@@ -8,28 +9,27 @@ const startUrls = [
     'https://www.insolvenzbekanntmachungen.de/cgi-bin/bl_suche.pl?Gericht=Hamburg&Suchart=einfach&Dateiart=er&Seite=1'
 ];
 
+const proxyConfiguration = await ProxyConfiguration.create({
+    groups: ['AUTO'] // oder 'RESIDENTIAL', falls verfügbar
+});
+
 const crawler = new PuppeteerCrawler({
     launchContext: {
         launcher: puppeteer,
         launchOptions: {
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            executablePath: executablePath(),
         },
     },
-    // Anti-Bot-Strategien aktivieren
-    preNavigationHooks: [
-        async ({ page }) => {
-            await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36');
-            await page.setExtraHTTPHeaders({
-                'Accept-Language': 'de-DE,de;q=0.9,en;q=0.8',
-            });
-        },
-    ],
+    proxyConfiguration,
     requestHandler: async ({ request, page, log }) => {
         log.info(`📄 Crawling ${request.url}`);
 
-        // kleine Wartezeit für menschliches Verhalten
-        await page.waitForTimeout(2000);
+        await page.waitForSelector('tr');
+        await page.mouse.move(200, 200);
+        await page.mouse.wheel({ deltaY: 300 });
+        await page.waitForTimeout(1000);
 
         const rows = await page.$$eval('tr', trs =>
             trs.map(tr => {
@@ -51,9 +51,7 @@ const crawler = new PuppeteerCrawler({
             });
         }
     },
-    maxRequestRetries: 5,
     maxRequestsPerCrawl: 1,
-    requestHandlerTimeoutSecs: 60,
 });
 
 await crawler.run(startUrls.map(url => ({ url })));
